@@ -1,0 +1,47 @@
+from django.urls import path
+from . import views
+from .views import (
+    FileUploadView,
+    get_csrf_token_view,
+    user_projects,
+    user_project_data,
+    user_project_delete,
+    save_shapes_view,
+    load_shapes,
+    search_label,
+    share_project,
+    shared_projects_withme,
+    shared_projects,
+    update_role,
+    user_role,
+    download_file,
+    create_subplot,
+    get_subplots,
+    check_project_title,
+    download_project_from_database,
+    get_instagram_user_info,
+    create_file_project
+)
+
+urlpatterns = [
+    path('upload/', FileUploadView.as_view(), name='post'),
+    path('get-csrf-token/', get_csrf_token_view, name='get_csrf_token'),
+    path('user-projects/', user_projects, name='user-projects'),
+    path('user-project-data/<str:project_title>/', user_project_data, name='user-project-data'),
+    path('user-project/<str:project_title>/', user_project_delete, name='user-project-data-delete'),
+    path('save-shapes/<str:project_title>/', save_shapes_view, name='save_shapes'),
+    path('load-shapes/<str:project_title>/', load_shapes, name='load_shapes'),
+    path('search-label/', search_label, name='search_label'),
+    path('share-project/', share_project, name='share_project'),
+    path('shared-projects-withme/', shared_projects_withme, name='shared_projects_withme'),
+    path('shared-projects/', shared_projects, name='shared_projects'),
+    path('update-role/', update_role, name='update_role'),
+    path('user-role/', user_role, name='user_role'),
+    path('download-file/', download_file, name='download_file'),
+    path("create-subplot/", create_subplot, name="create-subplot"),
+    path('get_subplots/<str:project_title>/', get_subplots, name='get_subplots'),
+    path('check-all-user-projects/', check_project_title, name='check_project_title'),
+    path('download-from-database/', download_project_from_database, name='download_project_from_database'),
+    path('search-ig-user-info/', get_instagram_user_info, name='get_instagram_user_info'),
+    path('create-file-project/', create_file_project, name='create_file_project'),
+]

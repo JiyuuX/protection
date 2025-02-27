@@ -1,0 +1,152 @@
+burak95783    2Ri-5tK23h
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Bubble } from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+import { parse } from 'csv-parse';
+
+Chart.register(...registerables);
+
+
+
+
+
+
+
+
+// pages/Home.js
+
+
+const Home = () => {
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/data');
+        if (!response.ok) {
+          throw new Error('API request failed');
+        }
+        const jsonData = await response.json();
+        setData(jsonData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // filter_2182 alanı true olan verileri filtrele
+    const filtered = data.filter(item => item.filter_2182 === 'true');
+    setFilteredData(filtered);
+  }, [data]);
+
+  const chartData = {
+    datasets: [
+      {
+        label: 'Bubbles',
+        data: filteredData.map(item => ({
+          label: item.Label, // Bubble etiketini burada belirt
+          x: parseFloat(item.X),
+          y: parseFloat(item.Y),
+          backgroundColor: item.Color, // Her bir veri noktası için API'den gelen renk değerini kullan
+          radius: parseFloat(item.Size)*30, // Boyutu burada ayarla
+        }))
+      }
+    ]
+  };
+
+  const chartOptions = {
+    scales: {
+      y: { min: 0, max: 1 },
+      x: { min: 0, max: 1 }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const data = context.dataset.data[context.dataIndex];
+
+            const label = data ? data.label || '' : '';
+            const x = data ? data.x.toFixed(6) : '';
+            const y = data ? data.y.toFixed(6) : '';
+            const radius = data ? data.radius: 'xx' ;
+            return `${label} (${x}, ${y}), ${radius}) `;
+          },
+          title: function() { return ''; },
+          labelColor: function(context) {
+            const data = context.dataset.data[context.dataIndex];
+            return data ? {
+              borderColor: 'black',
+              backgroundColor: data.backgroundColor,
+            } : {};
+          }
+        }
+      }
+    },
+    elements: {
+      point: {
+        backgroundColor: function(context) {
+          const data = context.dataset.data[context.dataIndex];
+          return data ? data.backgroundColor : '';
+        },
+        radius: function(context) {
+          const data = context.dataset.data[context.dataIndex];
+          
+          return data ? data.radius : 0;
+           
+          //const data = context.dataset.data[context.dataIndex].Size;
+          //return data ? data.radius : 0;
+        }
+
+      }
+      
+    }
+  };
+
+  return (
+    <div>
+      <h1>Bubble Chart</h1>
+      <div style={{ width: '1200px' }}>
+        <Bubble data={chartData} options={chartOptions} />
+      </div>
+    </div>
+  );
+};
+
+export default Home;
+
+
+
+
+
+İlyas bey merhaba, nasılsınız umarım iyisinizdir. 
+
+Plot daha da etkileşimli şu an, çizim için bi kaç araç da ekledim serbest çizim, line, rectangle vs. bir de ctrl+z ile geri alabiliyor, renk paleti de var, yazı ve node boyutları büyüyüp küçüklebiliyor, buton olarak yazılanlar aslında Label onlar, şimdilik buton1, buton2 vs diye adlandırdım, 
+
+1.buton tüm datayı çekiyor.
+2.buton filter = True
+3.buton filter = False
+
+veri seti büyük ve bilgisayar plotlarken donduğu için veri setini kırpıp başka bi csv oluşturdum normal bir bilgisayarda
+çalıştırılsa sorun olmaz muhtemelen, ama benim bilgisayarda biraz biraz donuyor  :) 
+
+Bu sebeple bütün datayı tek seferde çekip plotlamaya çalışmak yerine, 
+önce etiket seçiliyor (buton1,2,3 vs.) ilk 5000 küsür datayı veriyor "MORE" 'ye bastıkça kalan dataları veriyor taa ki o etiketi
+temsil eden veriler bitene kadar, bitince, toaster çalışıyor bildirim veriyor  "All data fetched" ve daha fazla "more" yapamaz çünkü
+veri bitmiş oluyor. 
+
+Dosya aktarımı da ok.
+
+Kabaca böyle şu an, video halini de göndereceğim. Saygılar.
+
+
+
+
+ 
